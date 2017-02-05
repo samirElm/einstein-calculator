@@ -10,12 +10,8 @@ module Commands
     end
 
     def respond
-      if data['type'] == 'message' && data['text'].start_with?('=')
-        response = Commands::Calculator.new.evaluate(data['text']).to_s
-        websocket.send({ type: 'message', text: response, channel: data['channel'] }.to_json)
-      elsif data['type'] == 'message'
-        response = "J'ai rien compris et inutile d'essayer la commande `help`, elle n'existe pas."
-        websocket.send({ type: 'message', text: response, channel: data['channel'] }.to_json)
+      if message_starts_with_equal?
+        websocket.send({ type: 'message', text: result, channel: data['channel'] }.to_json)
       end
     end
 
@@ -23,6 +19,14 @@ module Commands
 
     def parse_data(data)
       JSON.parse(data)
+    end
+
+    def message_starts_with_equal?
+      data['type'] == 'message' && data['text'].start_with?('=')
+    end
+
+    def result
+      Commands::Calculator.new.evaluate(data['text']).to_s
     end
   end
 end
