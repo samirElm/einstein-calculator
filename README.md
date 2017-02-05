@@ -1,1 +1,1 @@
-# Angry Einstein Bot
+# Einstein Calculator Bot
