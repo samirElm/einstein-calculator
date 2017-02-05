@@ -1,6 +1,3 @@
-# require 'http'
-# require 'json'
-# require 'faye/websocket'
 require 'eventmachine'
 require 'dotenv/load'
 require 'sinatra'
