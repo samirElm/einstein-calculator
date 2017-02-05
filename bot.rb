@@ -1,6 +1,6 @@
 require 'eventmachine'
 require 'sinatra'
-require 'dotenv/load'
+require 'dotenv/load' unless Sinatra::Base.production?
 
 require_relative 'slack/websocket'
 require_relative 'commands/responder'
