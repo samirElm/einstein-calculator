@@ -3,7 +3,7 @@ require 'dotenv/load'
 require 'sinatra'
 
 require_relative 'slack/websocket'
-require_relative 'commands/calculator'
+require_relative 'commands/responder'
 
 Thread.new do
   EM.run do
@@ -29,16 +29,7 @@ get '/oauth2callback' do
     end
 
     ws.on :message do |event|
-      data = JSON.parse(event.data)
-      p [:message, JSON.parse(event.data)]
-      if data['type'] == 'message' && data['text'].start_with?('=')
-        response = Commands::Calculator.new.evaluate(data['text']).to_s
-
-        ws.send({ type: 'message', text: response, channel: data['channel'] }.to_json)
-      elsif data['type'] == 'message'
-        response = "J'ai rien compris et inutile d'essayer la commande `help`, elle n'existe pas."
-        ws.send({ type: 'message', text: response, channel: data['channel'] }.to_json)
-      end
+      Commands::Responder.new(data: event.data, websocket: ws).respond
     end
 
     ws.on :close do |event|
