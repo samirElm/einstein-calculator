@@ -2,10 +2,10 @@ require 'http'
 require 'json'
 require 'faye/websocket'
 require 'eventmachine'
+require 'dotenv/load'
 require 'sinatra'
 
 require_relative 'commands/calculator'
-require_relative 'commands/responder'
 
 Thread.new do
   EM.run do
@@ -48,8 +48,7 @@ get '/oauth2callback' do
       data = JSON.parse(event.data)
       p [:message, JSON.parse(event.data)]
       if data['type'] == 'message' && data['text'].start_with?('=')
-        result = Commands::Calculator.new.evaluate(data['text']).to_s
-        response = Commands::Responder.new.respond(result)
+        response = Commands::Calculator.new.evaluate(data['text']).to_s
 
         ws.send({ type: 'message', text: response, channel: data['channel'] }.to_json)
       elsif data['type'] == 'message'
