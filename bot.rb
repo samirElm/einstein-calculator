@@ -1,6 +1,6 @@
 require 'eventmachine'
-require 'dotenv/load'
 require 'sinatra'
+require 'dotenv/load'
 
 require_relative 'slack/websocket'
 require_relative 'commands/responder'
