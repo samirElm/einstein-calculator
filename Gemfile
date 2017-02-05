@@ -5,5 +5,9 @@ gem 'faye-websocket'
 gem 'eventmachine'
 gem 'slack-ruby-bot'
 gem 'sinatra'
-gem 'dotenv'
 gem 'dentaku'
+
+group :development, :test do
+  gem 'dotenv'
+end
+
