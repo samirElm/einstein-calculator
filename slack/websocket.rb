@@ -4,28 +4,39 @@ require 'faye/websocket'
 
 module Slack
   class WebSocket
-    attr_reader :code
+    attr_reader :code, :token
 
     def initialize(code)
-      @code = code
+      @code  = code
+      @token = retrieve_access_token
     end
 
     def call
-      rc = JSON.parse(HTTP.post('https://slack.com/api/oauth.access', params: {
+      Faye::WebSocket::Client.new(retrieve_websocket_url)
+    end
+
+    private
+
+    def retrieve_access_token
+      request_access_token['bot']['bot_access_token']
+    end
+
+    def request_access_token
+      JSON.parse(HTTP.post('https://slack.com/api/oauth.access', params: {
         client_id: ENV["SLACK_CLIENT_ID"],
         client_secret: ENV["SLACK_CLIENT_SECRET"],
         code: code
       }))
+    end
 
-      token = rc['bot']['bot_access_token']
+    def retrieve_websocket_url
+      call_slack_rtm['url']
+    end
 
-      rc = JSON.parse(HTTP.post('https://slack.com/api/rtm.start', params: {
+    def call_slack_rtm
+      JSON.parse(HTTP.post('https://slack.com/api/rtm.start', params: {
         token: token
       }))
-
-      url = rc['url']
-
-      return Faye::WebSocket::Client.new(url)
     end
   end
 end
